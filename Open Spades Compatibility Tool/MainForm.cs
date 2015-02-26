@@ -181,13 +181,14 @@ namespace OpenSpadesCompatibilityTool
 
             try
             {
-                var sdl = new SDL(SDL.SDL_INIT_VIDEO);
-
-                foreach (var mode in sdl.ListModes(IntPtr.Zero, SDL.SDL_OPENGL | SDL.SDL_FULLSCREEN | SDL.SDL_DOUBLEBUF))
+                using (var sdl = new SDL(SDL.SDL_INIT_VIDEO))
                 {
-                    if (mode.W >= SDL_MODE_MINIMUM.Width && mode.H >= SDL_MODE_MINIMUM.Height)
+                    foreach (var mode in sdl.ListModes(IntPtr.Zero, SDL.SDL_OPENGL | SDL.SDL_FULLSCREEN | SDL.SDL_DOUBLEBUF))
                     {
-                        listModes.Items.Add(string.Format("{0}x{1}", mode.W, mode.H));
+                        if (mode.W >= SDL_MODE_MINIMUM.Width && mode.H >= SDL_MODE_MINIMUM.Height)
+                        {
+                            listModes.Items.Add(string.Format("{0}x{1}", mode.W, mode.H));
+                        }
                     }
                 }
             }
@@ -202,7 +203,6 @@ namespace OpenSpadesCompatibilityTool
             try
             {
                 CheckOpenGL();
-                CheckSDL();
             }
 
             catch (Exception ex)
@@ -210,6 +210,8 @@ namespace OpenSpadesCompatibilityTool
                 File.AppendAllText("error.log", string.Format("{0}{1}{1}", ex.GetBaseException(), Environment.NewLine));
                 MessageBox.Show("An error has occured. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            CheckSDL();
         }
 
         private void downloadbtn_Click(object sender, EventArgs e)

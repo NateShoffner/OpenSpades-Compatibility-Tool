@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -10,7 +9,7 @@ using System.Security;
 
 namespace OpenSpadesCompatibilityTool
 {
-    public class SDL
+    public class SDL : IDisposable
     {
         #region Constants
 
@@ -28,7 +27,7 @@ namespace OpenSpadesCompatibilityTool
 
         public SDL(int initFlags)
         {
-            __SDL_Init(initFlags);
+            SDL_Init(initFlags);
         }
 
         #endregion
@@ -36,7 +35,10 @@ namespace OpenSpadesCompatibilityTool
         #region P/Invokes
 
         [DllImport(DLL_NAME, CallingConvention = CALLING_CONVENTION, EntryPoint = "SDL_Init"), SuppressUnmanagedCodeSecurity]
-        private static extern int __SDL_Init(int flags);
+        private static extern int SDL_Init(int flags);
+
+        [DllImport(DLL_NAME, CallingConvention = CALLING_CONVENTION, EntryPoint = "SDL_Quit"), SuppressUnmanagedCodeSecurity]
+        private static extern int SDL_Quit();
 
         [DllImport(DLL_NAME, CallingConvention = CALLING_CONVENTION, EntryPoint = "SDL_ListModes"), SuppressUnmanagedCodeSecurity]
         private static extern IntPtr SDL_ListModesInternal(IntPtr format, int flags);
@@ -89,6 +91,15 @@ namespace OpenSpadesCompatibilityTool
                 W = w;
                 H = h;
             }
+        }
+
+        #endregion
+
+        #region Implementation of IDisposable
+
+        public void Dispose()
+        {
+            SDL_Quit();
         }
 
         #endregion
