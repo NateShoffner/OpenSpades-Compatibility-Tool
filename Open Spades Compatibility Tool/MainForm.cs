@@ -56,11 +56,10 @@ namespace OpenSpadesCompatibilityTool
             checkbtn.PerformClick();
         }
 
-        private void CheckCompatibility()
+        private void CheckOpenGL()
         {
             listExtensions.Items.Clear();
             listVariables.Items.Clear();
-            listModes.Items.Clear();
 
             //opengl info
             using (var opengl = new OpenGL(Process.GetCurrentProcess().MainWindowHandle))
@@ -174,11 +173,15 @@ namespace OpenSpadesCompatibilityTool
 
                 lblresult.Visible = true;
             }
+        }
 
-            if (File.Exists(SDL_DLL))
+        private void CheckSDL()
+        {
+            listModes.Items.Clear();
+
+            try
             {
-                //SDL info
-                var sdl = new SDL(SDL_DLL, SDL.SDL_INIT_VIDEO);
+                var sdl = new SDL(SDL.SDL_INIT_VIDEO);
 
                 foreach (var mode in sdl.ListModes(IntPtr.Zero, SDL.SDL_OPENGL | SDL.SDL_FULLSCREEN | SDL.SDL_DOUBLEBUF))
                 {
@@ -188,8 +191,7 @@ namespace OpenSpadesCompatibilityTool
                     }
                 }
             }
-
-            else
+            catch (DllNotFoundException)
             {
                 listModes.Items.Add(string.Format("Unable to locate {0}", SDL_DLL));
             }
@@ -199,7 +201,8 @@ namespace OpenSpadesCompatibilityTool
         {
             try
             {
-                CheckCompatibility();
+                CheckOpenGL();
+                CheckSDL();
             }
 
             catch (Exception ex)

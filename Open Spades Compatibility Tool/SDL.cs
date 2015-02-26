@@ -24,25 +24,16 @@ namespace OpenSpadesCompatibilityTool
         private const string DLL_NAME = "SDL.dll";
         private const CallingConvention CALLING_CONVENTION = CallingConvention.Cdecl;
 
-        private readonly string _dllPath;
-
         #region Constructor
 
-        public SDL(string dllPath, int initFlags)
+        public SDL(int initFlags)
         {
-            _dllPath = dllPath;
-
-            SetDllDirectory(Path.GetDirectoryName(_dllPath));
-
             __SDL_Init(initFlags);
         }
 
         #endregion
 
         #region P/Invokes
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool SetDllDirectory(string lpPathName);
 
         [DllImport(DLL_NAME, CallingConvention = CALLING_CONVENTION, EntryPoint = "SDL_Init"), SuppressUnmanagedCodeSecurity]
         private static extern int __SDL_Init(int flags);
